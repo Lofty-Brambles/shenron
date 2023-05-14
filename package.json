@@ -1,0 +1,35 @@
+{
+  "name": "shenron-bot",
+  "private": true,
+  "main": "dist/index.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Lofty-Brambles/shenron.git"
+  },
+  "scripts": {
+    "dev": "tsx watch source/index.ts",
+    "build": "tsx source/index.ts",
+    "preinstall": "npx only-allow pnpm",
+    "format": "prettier . --write --plugin-search-dir=.",
+    "lint": "eslint --fix --cache ."
+  },
+  "dependencies": {
+    "discord.js": "^14.11.0",
+    "mongodb": "^5.4.0",
+    "pino": "^8.14.1",
+    "pino-pretty": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.1.1",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
+    "eslint": "^8.40.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "^2.8.8",
+    "tsx": "^3.12.7",
+    "typescript": "^5.0.4"
+  }
+}
