@@ -11,6 +11,7 @@ export abstract class Command {
   public abstract aliases: Set<string>;
   public abstract usage: (typeof LEVELS)[keyof typeof LEVELS];
   public abstract disabled: boolean;
+  public cooldown?: number;
 
   constructor(client: Manager, name: string) {
     this.client = client;

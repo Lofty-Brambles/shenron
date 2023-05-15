@@ -10,7 +10,7 @@ export default class Reload extends Command {
 
   public syntax: string = `${this.name.split("/").at(-1)}`;
   public description: string = "This is used to reload the commands.";
-  public aliases: Set<string> = new Set("reset");
+  public aliases: Set<string> = new Set(["reset"]);
   public disabled: boolean = false;
   public usage: 0 | 2 | 1 = LEVELS.ADMIN;
 

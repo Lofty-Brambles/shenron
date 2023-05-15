@@ -25,4 +25,9 @@ export class Database {
     await collection.insertOne({ [key]: initial });
     return initial;
   }
+
+  public async setData<T>(page: string, key: string, data: T) {
+    const collection = this.db!.collection(page);
+    await collection.insertOne({ [key]: data });
+  }
 }

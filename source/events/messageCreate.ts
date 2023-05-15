@@ -16,7 +16,10 @@ export default class MesageCreate extends Event {
     if (!text.startsWith(this.client.prefix)) return;
 
     const args = text.split(" ");
-    const command = this.client.commands.get(args[0].slice(1));
+    const name = args[0].slice(1);
+    const command =
+      this.client.commands.get(name) ??
+      this.client.commands.get(this.client.aliases.get(name) ?? "");
 
     if (command === undefined) {
       message.reply({
@@ -34,6 +37,22 @@ Please use \`${this.client.prefix}help\` to see all the commands!`,
         allowedMentions: { repliedUser: false },
       });
       return;
+    }
+
+    if (command.cooldown) {
+      const cooldownMap = this.client.cooldowns.get(command.name.split("/")[1]);
+      const lastUsed = cooldownMap?.get(message.author.id) ?? 0;
+      const timeDiff = new Date().getTime() - lastUsed;
+
+      if (timeDiff < command.cooldown) {
+        message.reply({
+          content: `This command is still on cooldown for you! You can run it again <t:${
+            lastUsed + command.cooldown + 1
+          }:R>`,
+          allowedMentions: { repliedUser: false },
+        });
+        return;
+      }
     }
 
     command.run(

@@ -86,6 +86,13 @@ export class Manager extends Client {
       "cooldowns",
       this.cooldowns,
     );
+
+    this.logger.info("Loading the prefix: adding it as default");
+    this.prefix = await this.db!.syncData(
+      META_COLLECTION,
+      "prefix",
+      this.prefix,
+    );
   }
 
   public async loadCommands(options: { force: boolean } = { force: false }) {

@@ -18,42 +18,63 @@ export default class Help extends Command {
   public usage: 0 | 1 | 2 = LEVELS.MEMBER;
 
   async run(args: string[], message: Message) {
-    const command = args.at(0);
+    const arg = args.at(0);
+    const formatter = Intl.DateTimeFormat("en-US", { dateStyle: "medium" });
 
-    let info: EmbedField[] | null;
-    if (command === undefined) info = this.generateCommands();
-    else info = [this.getFullDescription(command)];
+    const description = arg ? this.getCommand(arg) : this.getDescription();
+    const fields: EmbedField[] = arg ? [] : this.getCommands();
 
     const embed = new EmbedBuilder()
       .setColor(DISCORD_COLOUR)
-      .setTitle("❔ | The Help Menu")
-      .setFooter({ text: `${new Date().getTime()}` })
-      .addFields(info);
+      .setAuthor({ iconURL: this.client.user?.avatar!, name: "Shenron™" })
+      .setFooter({ text: formatter.format(new Date()) })
+      .setDescription(description)
+      .setFields(fields);
 
     await message.channel.send({ embeds: [embed] });
   }
 
-  public generateCommands() {
-    return [...this.client.commands.entries()].map(([name, command]) => {
-      return {
-        name,
-        value: `\`${command.name.split("/").join(" - ")}\` : \`${
-          command.syntax
-        }\``,
-      };
-    });
+  public getDescription() {
+    return `> <:D_Arrow:1107350049144447138> \`${this.client.prefix}help (command)\` - list of all command, or the description of one.
+> \`[] - Required Options | () - Optional Options\`
+`;
   }
 
-  public getFullDescription(command: string) {
-    const data = this.client.commands.get(command);
-    if (data === undefined)
-      return { name: "Oh no!", value: "This command is not valid!" };
+  public getCommands() {
+    const fields = new Map<string, string[]>();
+    this.client.commands.forEach((command, name) => {
+      const [category] = command.name.split("/");
+      const stiffName = command.disabled ? `\`~~${name}~~\`` : `\`${name}\``;
+      if (!fields.has(category)) fields.set(category, [stiffName]);
+      else fields.get(category)?.push(stiffName);
+    });
 
-    return {
-      name: data.name.split("/").join(" - "),
-      value: `${data.description}
-**Usage -** \`${data.syntax}\`
-**Aliases -** ${[...data.aliases.entries()].join(", ").slice(0, -2)}`,
-    };
+    return [...fields.entries()].map(([word, values]) => ({
+      name: `¬ ${word[0].toUpperCase()}${word.slice(1)}`,
+      value: values.join(", "),
+    }));
+  }
+
+  public getCommand(name: string) {
+    const command =
+      this.client.commands.get(name) ??
+      this.client.commands.get(this.client.aliases.get(name) ?? "");
+
+    if (command === undefined)
+      return `> Oh no, this command was not found!
+${this.getDescription()}`;
+
+    if (command.disabled)
+      return `Oh no, this command is disabled!
+${this.getDescription()}`;
+
+    const [category] = command.name.split("/");
+    return `> **${name} [${category}]**
+${command.description}
+
+<:D_Arrow:1107350049144447138> Usage: \`${this.client.prefix}${command.syntax}\`
+<:D_Arrow:1107350049144447138> Aliases: ${[...command?.aliases.values()]
+      .map((name) => `\`${name}\``)
+      .join(", ")}`;
   }
 }
