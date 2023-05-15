@@ -1,6 +1,6 @@
 import type { Manager } from "../../core/manager";
 import type { Message } from "discord.js";
-import { LEVELS, META_COLLECTION } from "../../core/constants";
+import { BULLET_EMOJI, LEVELS, META_COLLECTION } from "../../core/constants";
 import { Command } from "../../core/structures/command";
 
 export default class Prefix extends Command {
@@ -19,7 +19,7 @@ export default class Prefix extends Command {
 
     let description = "";
     if (arg === undefined)
-      description = `> <:D_Arrow:1107350049144447138> \`${this.client.prefix}${this.syntax}\` - ${this.description}`;
+      description = `> ${BULLET_EMOJI} \`${this.client.prefix}${this.syntax}\` - ${this.description}`;
     else {
       this.client.prefix = arg;
       this.client.db!.setData(META_COLLECTION, "prefix", description);

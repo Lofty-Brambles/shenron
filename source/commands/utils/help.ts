@@ -1,6 +1,6 @@
 import type { Manager } from "../../core/manager";
 import { EmbedBuilder, type Message } from "discord.js";
-import { DISCORD_COLOUR, LEVELS } from "../../core/constants";
+import { BULLET_EMOJI, DISCORD_COLOUR, LEVELS } from "../../core/constants";
 import { Command } from "../../core/structures/command";
 
 type EmbedField = { name: string; value: string };
@@ -35,7 +35,7 @@ export default class Help extends Command {
   }
 
   public getDescription() {
-    return `> <:D_Arrow:1107350049144447138> \`${this.client.prefix}help (command)\` - list of all command, or the description of one.
+    return `> ${BULLET_EMOJI} \`${this.client.prefix}help (command)\` - list of all command, or the description of one.
 > \`[] - Required Options | () - Optional Options\`
 `;
   }
@@ -72,8 +72,8 @@ ${this.getDescription()}`;
     return `> **${name} [${category}]**
 ${command.description}
 
-<:D_Arrow:1107350049144447138> Usage: \`${this.client.prefix}${command.syntax}\`
-<:D_Arrow:1107350049144447138> Aliases: ${[...command?.aliases.values()]
+${BULLET_EMOJI} Usage: \`${this.client.prefix}${command.syntax}\`
+${BULLET_EMOJI} Aliases: ${[...command?.aliases.values()]
       .map((name) => `\`${name}\``)
       .join(", ")}`;
   }
