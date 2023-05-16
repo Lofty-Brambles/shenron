@@ -22,7 +22,7 @@ export default class Prefix extends Command {
       description = `> ${BULLET_EMOJI} \`${this.client.prefix}${this.syntax}\` - ${this.description}`;
     else {
       this.client.prefix = arg;
-      this.client.db!.setData(META_COLLECTION, "prefix", description);
+      this.client.db!.syncData(META_COLLECTION, "prefix", arg);
       description = `> The prefix is now set to \`${this.client.prefix}\``;
     }
 

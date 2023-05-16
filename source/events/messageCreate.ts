@@ -40,14 +40,15 @@ Please use \`${this.client.prefix}help\` to see all the commands!`,
     }
 
     if (command.cooldown) {
+      console.log(this.client.cooldowns);
       const cooldownMap = this.client.cooldowns.get(command.name.split("/")[1]);
       const lastUsed = cooldownMap?.get(message.author.id) ?? 0;
       const timeDiff = new Date().getTime() - lastUsed;
 
-      if (timeDiff < command.cooldown) {
+      if (timeDiff < command.cooldown(message)) {
         message.reply({
           content: `This command is still on cooldown for you! You can run it again <t:${
-            lastUsed + command.cooldown + 1
+            lastUsed + command.cooldown(message) + 1
           }:R>`,
           allowedMentions: { repliedUser: false },
         });

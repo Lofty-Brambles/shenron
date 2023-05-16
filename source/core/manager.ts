@@ -6,7 +6,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { Command, BaseCommand } from "./structures/command";
-import { Event, BaseEvent } from "./structures/event";
+import { BaseEvent } from "./structures/event";
 import { Database } from "./database";
 import { Utils } from "./utils";
 import {
@@ -15,6 +15,7 @@ import {
   EVENTS_FOLDER,
   COMMANDS_FOLDER,
   META_COLLECTION,
+  INITIAL_STATS,
 } from "./constants";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -40,6 +41,7 @@ export class Manager extends Client {
   public commands = new Map<string, Command>();
   public aliases = new Map<string, string>();
   public cooldowns = new Map<string, Map<string, number>>();
+  public userData = new Map<string, typeof INITIAL_STATS>();
 
   public prefix: string;
   public metaUserIDs: MetaUserIDs | undefined;
@@ -93,6 +95,11 @@ export class Manager extends Client {
       "prefix",
       this.prefix,
     );
+
+    this.logger.info("Loading the user data: copying into cache");
+    this.userData = await this.db!.syncUserData<
+      { _id: string } & typeof INITIAL_STATS
+    >();
   }
 
   public async loadCommands(options: { force: boolean } = { force: false }) {

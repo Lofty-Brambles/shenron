@@ -1,7 +1,7 @@
 import { stat } from "node:fs/promises";
 
 import type { Manager } from "./manager";
-import { LEVELS } from "./constants";
+import { LEVELS, USER_COLLECTION } from "./constants";
 
 export class Utils {
   public static async exists(path: string) {
@@ -31,5 +31,9 @@ export class Utils {
     if (client.metaUserIDs!.admins.includes(id)) return LEVELS.ADMIN;
     if (client.metaUserIDs!.managers.includes(id)) return LEVELS.MANAGER;
     return LEVELS.MEMBER;
+  }
+
+  public static async startCheck(client: Manager, _id: string) {
+    return await client.db!.checkExistence(USER_COLLECTION, { _id });
   }
 }
