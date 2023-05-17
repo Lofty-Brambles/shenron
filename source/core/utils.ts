@@ -1,7 +1,8 @@
 import { stat } from "node:fs/promises";
 
-import type { Manager } from "./manager";
-import { LEVELS, USER_COLLECTION } from "./constants";
+import type { Manager } from "@/core/manager";
+import { BULLET_EMOJI, LEVELS, USER_COLLECTION } from "@/core/constants";
+import { Command } from "@/structures/command";
 
 export class Utils {
   public static async exists(path: string) {
@@ -35,5 +36,9 @@ export class Utils {
 
   public static async startCheck(client: Manager, _id: string) {
     return await client.db!.checkExistence(USER_COLLECTION, { _id });
+  }
+
+  public static generateSyntax(command: Command) {
+    return `> ${BULLET_EMOJI} \`${command.client.prefix}${command.name} ${command.syntax}\` - ${command.description}`;
   }
 }

@@ -1,5 +1,5 @@
 import { GatewayIntentBits } from "discord.js";
-import { Manager } from "./core/manager";
+import { Manager } from "@/core/manager";
 
 const intents = [
   GatewayIntentBits.Guilds,

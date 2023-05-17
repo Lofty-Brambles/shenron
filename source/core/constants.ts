@@ -1,6 +1,6 @@
 import type { ColorResolvable } from "discord.js";
 
-export { default as DATA } from "../../.config.json";
+export { default as ENV } from "../../.config.json";
 
 export const COMMANDS_FOLDER = "commands";
 export const EVENTS_FOLDER = "events";
@@ -20,12 +20,12 @@ export const LEVELS = {
 } as const;
 
 export const INITIAL_STATS = {
-  coins: 0,
-  maxHp: 100,
-  hp: 100,
-  armor: 0,
-  damage: 5,
   inventory: {} as Record<string, number>,
+  hitpoints: 100,
+  damage: 5,
+  coins: 0,
+  level: 1,
+  exp: 0,
 };
 
 export const COOLDOWNS = {

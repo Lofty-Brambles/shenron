@@ -1,5 +1,5 @@
-import type { Manager } from "../core/manager";
-import { Event } from "../core/structures/event";
+import type { Manager } from "@/core/manager";
+import { Event } from "@/structures/event";
 
 export default class Warn extends Event {
   constructor(client: Manager, name: string) {

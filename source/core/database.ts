@@ -1,12 +1,12 @@
 import { MongoClient, type Db } from "mongodb";
-import { DATA, DATABASE_NAME, USER_COLLECTION } from "./constants";
+import { ENV, DATABASE_NAME, USER_COLLECTION } from "./constants";
 
 export class Database {
   private client: MongoClient;
   private db: Db | undefined;
 
   constructor() {
-    this.client = new MongoClient(DATA.mongoURI);
+    this.client = new MongoClient(ENV.mongoURI);
   }
 
   public async connect() {
@@ -27,13 +27,13 @@ export class Database {
   }
 
   public async syncUserData<T extends Record<string, any>>() {
-    const map = new Map<string, Omit<T, "_id">>();
+    const map: Record<string, Omit<T, "_id">> = {};
 
     const collection = this.db!.collection(USER_COLLECTION);
     const cursor = collection.find<T>({ _id: { $exists: true } });
     for await (const doc of cursor) {
       const { _id, ...stats } = doc;
-      map.set(_id, stats);
+      map["_id"] = stats;
     }
 
     return map;

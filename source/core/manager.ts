@@ -5,12 +5,13 @@ import { readdir, stat } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { Command, BaseCommand } from "./structures/command";
-import { BaseEvent } from "./structures/event";
-import { Database } from "./database";
-import { Utils } from "./utils";
+import { Command } from "@/structures/command";
+import { Event } from "@/structures/event";
+import { Database } from "@/core/database";
+import { Utils } from "@/core/utils";
+
 import {
-  DATA,
+  ENV,
   STANDARD_EXT,
   EVENTS_FOLDER,
   COMMANDS_FOLDER,
@@ -38,10 +39,9 @@ export class Manager extends Client {
   public db: Database | undefined;
   public logger: Logger;
 
-  public commands = new Map<string, Command>();
-  public aliases = new Map<string, string>();
-  public cooldowns = new Map<string, Map<string, number>>();
-  public userData = new Map<string, typeof INITIAL_STATS>();
+  public commands: Record<string, Command> = {};
+  public cooldowns: Record<string, Record<string, string>> = {};
+  public userData: Record<string, typeof INITIAL_STATS> = {};
 
   public prefix: string;
   public metaUserIDs: MetaUserIDs | undefined;
@@ -49,7 +49,7 @@ export class Manager extends Client {
   constructor(options: ClientOptions) {
     super(options);
     this.logger = pino(pinoConfig);
-    this.prefix = DATA.prefix;
+    this.prefix = ENV.prefix;
   }
 
   public async connect() {
@@ -67,7 +67,7 @@ export class Manager extends Client {
     this.logger.info("Loading events: attaching events to emitter");
     await this.loadEvents();
 
-    await this.login(DATA.token);
+    await this.login(ENV.token);
     this.logger.info(`Ready, logged in as ${this.user?.username}!`);
   }
 
@@ -77,8 +77,8 @@ export class Manager extends Client {
       META_COLLECTION,
       "metaUserIDs",
       {
-        admins: DATA.admins,
-        managers: DATA.managers,
+        admins: ENV.admins,
+        managers: ENV.managers,
       },
     );
 
@@ -108,9 +108,8 @@ export class Manager extends Client {
       this.logger.error(`Could not find module: ${commandsPath}`);
 
     if (options.force) {
-      this.commands = new Map();
-      this.aliases = new Map();
-      this.cooldowns = new Map();
+      this.commands = {};
+      this.cooldowns = {};
     }
 
     const categories = await readdir(commandsPath);
@@ -139,7 +138,7 @@ export class Manager extends Client {
 
     await Utils.PromiseMap(events, async (eventName) => {
       const eventPath = join(eventsPath, eventName);
-      const event = (await import(eventPath)).default as typeof BaseEvent;
+      const event = (await import(eventPath)).default as typeof Event;
       const instance = new event(this, eventName.slice(0, -3));
 
       this[instance.frequency](
@@ -151,26 +150,17 @@ export class Manager extends Client {
   }
 
   private async registerCommand(path: string) {
-    const command = (await import(path)).default as typeof BaseCommand;
+    const command = (await import(path)).default as typeof Command;
     const [category, commandName] = Utils.getLocation(path);
-    const instance = new command(this, `${category}/${commandName}`);
+    const instance = new command(this, commandName, category);
 
-    if (this.commands.has(commandName)) {
+    if (this.commands[commandName] !== undefined) {
       this.logger.error(`Commands can't have same names: ${commandName} exist`);
       return;
     }
 
     this.logger.info(`Loading command: ${commandName}`);
-    this.commands.set(commandName, instance);
-    this.cooldowns.set(commandName, new Map());
-
-    instance.aliases.forEach((alias) => {
-      if (![...this.aliases.keys()].includes(alias))
-        this.aliases.set(alias, commandName);
-      else {
-        this.logger.warn(`Alias exists: removed ${alias} for ${commandName}`);
-        instance.aliases.delete(alias);
-      }
-    });
+    this.commands[commandName] = instance;
+    this.cooldowns[commandName] = {};
   }
 }

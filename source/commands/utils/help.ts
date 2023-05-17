@@ -1,80 +1,54 @@
-import type { Manager } from "../../core/manager";
-import { EmbedBuilder, type Message } from "discord.js";
-import { BULLET_EMOJI, DISCORD_COLOUR, LEVELS } from "../../core/constants";
-import { Command } from "../../core/structures/command";
+import type { Message } from "discord.js";
 
-type EmbedField = { name: string; value: string };
+import type { Manager } from "@/core/manager";
+import { BULLET_EMOJI, LEVELS } from "@/core/constants";
+import { Command } from "@/structures/command";
+import { Utils } from "@/core/utils";
 
 export default class Help extends Command {
-  constructor(client: Manager, name: string) {
-    super(client, name);
+  constructor(client: Manager, name: string, category: string) {
+    super(client, name, category);
   }
 
-  public syntax: string = `${this.name.split("/").at(-1)} <command>`;
+  public syntax: string = "(command)";
   public description: string =
     "This is used to know about all the commands available to the user.";
-  public aliases: Set<string> = new Set();
-  public disabled: boolean = false;
   public usage: 0 | 1 | 2 = LEVELS.MEMBER;
 
-  async run(args: string[], message: Message) {
-    const arg = args.at(0);
-    const formatter = Intl.DateTimeFormat("en-US", { dateStyle: "medium" });
-
+  run(message: Message) {
+    const arg = message.content.trim().split(" ").at(1);
     const description = arg ? this.getCommand(arg) : this.getDescription();
-    const fields: EmbedField[] = arg ? [] : this.getCommands();
-
-    const embed = new EmbedBuilder()
-      .setColor(DISCORD_COLOUR)
-      .setAuthor({ iconURL: this.client.user?.avatar!, name: "Shenron™" })
-      .setFooter({ text: formatter.format(new Date()) })
-      .setDescription(description)
-      .setFields(fields);
-
-    await message.channel.send({ embeds: [embed] });
+    message.channel.send(description);
   }
 
-  public getDescription() {
-    return `> ${BULLET_EMOJI} \`${this.client.prefix}help (command)\` - list of all command, or the description of one.
-> \`[] - Required Options | () - Optional Options\`
-`;
-  }
-
-  public getCommands() {
-    const fields = new Map<string, string[]>();
-    this.client.commands.forEach((command, name) => {
-      const [category] = command.name.split("/");
-      const stiffName = command.disabled ? `\`~~${name}~~\`` : `\`${name}\``;
-      if (!fields.has(category)) fields.set(category, [stiffName]);
-      else fields.get(category)?.push(stiffName);
-    });
-
-    return [...fields.entries()].map(([word, values]) => ({
-      name: `¬ ${word[0].toUpperCase()}${word.slice(1)}`,
-      value: values.join(", "),
-    }));
-  }
-
-  public getCommand(name: string) {
-    const command =
-      this.client.commands.get(name) ??
-      this.client.commands.get(this.client.aliases.get(name) ?? "");
-
+  getCommand(name: string) {
+    const command = this.client.commands[name];
     if (command === undefined)
-      return `> Oh no, this command was not found!
-${this.getDescription()}`;
+      return `> Sorry, this command wasn't found!
+> Please use \`${this.client.prefix}help\` to see all the commands!`;
 
-    if (command.disabled)
-      return `Oh no, this command is disabled!
-${this.getDescription()}`;
-
-    const [category] = command.name.split("/");
-    return `> **${name} [${category}]**
+    return `> **${name} [${command.category}]**
 ${command.description}
 
-${BULLET_EMOJI} Usage: \`${this.client.prefix}${command.syntax}\`
-${BULLET_EMOJI} Aliases: ${[...command?.aliases.values()]
-      .map((name) => `\`${name}\``)
-      .join(", ")}`;
+${BULLET_EMOJI} Usage: \`${this.client.prefix}${name} ${command.syntax}\``;
+  }
+
+  getDescription() {
+    const collection: Record<string, string[]> = {};
+    Object.entries(this.client.commands).forEach(([_, command]) => {
+      if (collection[command.category] === undefined)
+        collection[command.category] = [command.name];
+      else collection[command.category].push(command.name);
+    });
+
+    Object.entries(collection).reduce((string, [category, names]) => {
+      return `${string}
+> **${category[0].toUpperCase()}${category.slice(1)}**
+${names.map((name) => `\`${name}\``).join(", ")}`;
+    }, "");
+
+    return `> ${Utils.generateSyntax(this)}
+> \`[] - Required Options | () - Optional Options\`
+`;
   }
 }

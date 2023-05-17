@@ -1,31 +1,31 @@
-import type { Manager } from "../../core/manager";
 import type { Message } from "discord.js";
-import { BULLET_EMOJI, LEVELS, META_COLLECTION } from "../../core/constants";
-import { Command } from "../../core/structures/command";
+
+import type { Manager } from "@/core/manager";
+import { LEVELS, META_COLLECTION } from "@/core/constants";
+import { Command } from "@/structures/command";
+import { Utils } from "@/core/utils";
 
 export default class Prefix extends Command {
-  constructor(client: Manager, name: string) {
-    super(client, name);
+  constructor(client: Manager, name: string, category: string) {
+    super(client, name, category);
   }
 
-  public syntax: string = `${this.name.split("/").at(-1)} [prefix]`;
+  public syntax: string = `[prefix]`;
   public description: string = "This is used to set a prefix for the bot.";
-  public aliases: Set<string> = new Set();
-  public disabled: boolean = false;
   public usage: 0 | 2 | 1 = LEVELS.ADMIN;
 
-  async run(args: string[], message: Message) {
-    const arg = args.at(0)?.trim();
+  async run(message: Message) {
+    const arg = message.content.trim().split(" ").at(1);
 
-    let description = "";
-    if (arg === undefined)
-      description = `> ${BULLET_EMOJI} \`${this.client.prefix}${this.syntax}\` - ${this.description}`;
-    else {
-      this.client.prefix = arg;
-      this.client.db!.syncData(META_COLLECTION, "prefix", arg);
-      description = `> The prefix is now set to \`${this.client.prefix}\``;
+    if (arg === undefined) {
+      message.channel.send(Utils.generateSyntax(this));
+      return;
     }
 
-    message.channel.send(description);
+    this.client.prefix = arg;
+    this.client.db!.syncData(META_COLLECTION, "prefix", arg);
+    message.channel.send(
+      `> The prefix is now set to \`${this.client.prefix}\``,
+    );
   }
 }
