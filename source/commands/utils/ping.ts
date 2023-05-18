@@ -3,6 +3,7 @@ import type { Message } from "discord.js";
 import type { Manager } from "@/core/manager";
 import { LEVELS } from "@/core/constants";
 import { Command } from "@/structures/command";
+import { Utils } from "@/core/utils";
 
 export default class Ping extends Command {
   constructor(client: Manager, name: string, category: string) {
@@ -14,7 +15,7 @@ export default class Ping extends Command {
   public usage: 0 | 2 | 1 = LEVELS.ADMIN;
 
   run(message: Message) {
-    message.channel.send(`> 🏓 | Pong! Websocket ping: ${this.client.ws.ping}
-> The bot has been up since <t:${(new Date()).getTime() - process.uptime()}:R>`);
+    message.channel.send(`> 🏓 | Pong! Websocket ping: **${this.client.ws.ping}ms**
+> The bot has been up since <t:${Utils.timestamp() - Math.floor(process.uptime())}:R>`);
   }
 }

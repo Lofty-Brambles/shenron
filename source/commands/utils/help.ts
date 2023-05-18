@@ -41,14 +41,16 @@ ${BULLET_EMOJI} Usage: \`${this.client.prefix}${name} ${command.syntax}\``;
       else collection[command.category].push(command.name);
     });
 
-    Object.entries(collection).reduce((string, [category, names]) => {
-      return `${string}
-> **${category[0].toUpperCase()}${category.slice(1)}**
+    const list = Object.entries(collection).reduce(
+      (string, [category, names]) => {
+        return `${string}
+${BULLET_EMOJI} **${category[0].toUpperCase()}${category.slice(1)}**
 ${names.map((name) => `\`${name}\``).join(", ")}`;
-    }, "");
+      },
+      "",
+    );
 
-    return `> ${Utils.generateSyntax(this)}
-> \`[] - Required Options | () - Optional Options\`
-`;
+    return `${Utils.generateSyntax(this)}
+> \`[] - Required Options | () - Optional Options\`${list}`;
   }
 }

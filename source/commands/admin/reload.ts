@@ -14,6 +14,7 @@ export default class Reload extends Command {
   public usage: 0 | 2 | 1 = LEVELS.ADMIN;
 
   async run(message: Message) {
+    this.client.logger.info("Reloading commands: admin forced.")
     const total = Object.keys(this.client.commands).length;
     await message.channel.send(`Reloading ${total} commands...`);
     this.client.loadCommands({ force: true });

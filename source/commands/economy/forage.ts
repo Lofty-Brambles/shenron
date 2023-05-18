@@ -30,9 +30,11 @@ export default class Mine extends Command {
 
   async run(message: Message) {
     const results = this.checkCooldown(message.author.id);
-    if (results.onCooldown)
+    if (results.onCooldown) {
       message.reply(`> You need to wait till you can forage again!
 > You can do so <t:${results.availableOn}:R>`);
+      return;
+    }
 
     const player = Utils.fetchPlayer(this.client, message.author.id);
     const hasSickle = Object.keys(player.inventory).includes(TOOLS.SICKLE.NAME);
@@ -43,20 +45,21 @@ export default class Mine extends Command {
 
     await message.channel.send(description);
     this.client.cooldowns[this.name][message.author.id] = `${
-      new Date().getTime() + this.cooldown(hasSickle)
+      Utils.timestamp() + this.cooldown(hasSickle)
     }`;
   }
 
   checkCooldown(id: string) {
     const availableOn = this.client.cooldowns[this.name][id] as Indeter<string>;
     const onCooldown =
-      availableOn === undefined || +availableOn < new Date().getTime();
+      availableOn !== undefined && +availableOn > Utils.timestamp();
 
     return { onCooldown, availableOn };
   }
 
   generateDescription(id: string, loot: Record<string, number>) {
     const lootString = Object.entries(loot)
+      .filter(([_, number]) => number !== 0)
       .map(([name, quantity], i) => {
         const item = name as keyof typeof MATERIAL_EMOTES;
 

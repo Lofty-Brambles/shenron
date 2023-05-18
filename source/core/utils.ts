@@ -85,4 +85,8 @@ export class Utils {
     });
     return inventory;
   }
+
+  public static timestamp() {
+    return Math.floor(new Date().getTime() / 1000);
+  }
 }
