@@ -7,6 +7,7 @@ import {
   INITIAL_STATS,
   LEVELS,
   USER_COLLECTION,
+  MATERIAL_EMOTES,
 } from "@/core/constants";
 
 type Inventory = Record<string, number>;
@@ -88,5 +89,26 @@ export class Utils {
 
   public static timestamp() {
     return Math.floor(new Date().getTime() / 1000);
+  }
+
+  public static generateDescription(
+    id: string,
+    message: string,
+    loot: Record<string, number>,
+  ) {
+    const lootString = Object.entries(loot)
+      .filter(([_, number]) => number !== 0)
+      .map(([name, quantity], i) => {
+        const item = name as keyof typeof MATERIAL_EMOTES;
+
+        return `\`${i + 1}.\` +${quantity} ${MATERIAL_EMOTES[item]} ${
+          item[0]
+        }${item.slice(1).toLowerCase()}`;
+      })
+      .join("\n");
+
+    return `> <@${id}> has ${message}
+> He emerges with loot!
+${lootString}`;
   }
 }

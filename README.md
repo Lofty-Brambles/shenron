@@ -7,8 +7,8 @@
 [ ] admin add/remove [cos beerus asked]
 
 [x] forage [no tools / sickle, low coins]
-[ ] chop [hatchet, moderate coins]
-[ ] mine [pickaxe, moderate coins]
+[x] chop [hatchet, moderate coins]
+[x] mine [pickaxe, moderate coins]
 [ ] daily [increments as collected, breaks after 3 weeks]
 
 [ ] fight [random minigame to fight, higher level means higher rewards and occasional bosses]
