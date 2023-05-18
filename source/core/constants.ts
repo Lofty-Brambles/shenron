@@ -23,9 +23,42 @@ export const INITIAL_STATS = {
   inventory: {} as Record<string, number>,
   hitpoints: 100,
   damage: 5,
-  coins: 0,
+  scales: 0,
   level: 1,
   exp: 0,
+};
+
+export const TOOLS = {
+  WOOD_HATCHET: {
+    NAME: "Wooden Hatchet",
+    EMOTE: "",
+  },
+  WOOD_PICKAXE: {
+    NAME: "Wooden Pickaxe",
+    EMOTE: "",
+  },
+  METAL_HATCHET: {
+    NAME: "Metal Hatchet",
+    EMOTE: "",
+  },
+  METAL_PICKAXE: {
+    NAME: "Metal Pickaxe",
+    EMOTE: "",
+  },
+  SICKLE: {
+    NAME: "Sickle",
+    EMOTE: "",
+  },
+};
+
+export const MATERIAL_EMOTES = {
+  SCALES: "",
+  WOOD: "<:Wood:1108541714387435521>",
+  THATCH: "<:Thatch:1108541733312135240>",
+  FIBRE: "<:Fibre:1108541755659407422>",
+  STONE: "",
+  FLINT: "<:Flint:1108541789817819227>",
+  METAL: "",
 };
 
 export const COOLDOWNS = {

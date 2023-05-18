@@ -1,8 +1,19 @@
 import { stat } from "node:fs/promises";
 
 import type { Manager } from "@/core/manager";
-import { BULLET_EMOJI, LEVELS, USER_COLLECTION } from "@/core/constants";
 import { Command } from "@/structures/command";
+import {
+  BULLET_EMOJI,
+  INITIAL_STATS,
+  LEVELS,
+  USER_COLLECTION,
+} from "@/core/constants";
+
+type Inventory = Record<string, number>;
+
+export type RangeLoot = (condition: boolean) => [number, number];
+export type ChanceLoot = (condition: boolean) => number;
+export type LootTable = Record<string, RangeLoot | ChanceLoot>;
 
 export class Utils {
   public static async exists(path: string) {
@@ -40,5 +51,38 @@ export class Utils {
 
   public static generateSyntax(command: Command) {
     return `> ${BULLET_EMOJI} \`${command.client.prefix}${command.name} ${command.syntax}\` - ${command.description}`;
+  }
+
+  public static fetchPlayer(client: Manager, id: string) {
+    let player = client.userData[id];
+    if (player !== undefined) return player;
+    client.userData[id] = INITIAL_STATS;
+    return client.userData[id];
+  }
+
+  public static sortLoot(lootTable: LootTable, condition: boolean) {
+    const randRange = ([min, max]: [number, number]) =>
+      Math.floor(Math.random() * (max - min + 1)) + min;
+
+    const trueChance = (chance: number) =>
+      Math.floor(Math.random() * 100) + 1 <= chance;
+
+    const loot: Record<string, number> = {};
+    Object.keys(lootTable).forEach((key) => {
+      const decider = lootTable[key](condition);
+      const result =
+        typeof decider === "object" ? randRange(decider) : trueChance(decider);
+      loot[key] = typeof result === "number" ? result : Number(result);
+    });
+
+    return loot;
+  }
+
+  public static addLoot(inventory: Inventory, loot: Inventory) {
+    Object.entries(loot).forEach(([key, value]) => {
+      if (value === 0) return;
+      inventory[key] = inventory[key] ? value : inventory[key] + value;
+    });
+    return inventory;
   }
 }
