@@ -1,7 +1,6 @@
 import type { Message } from "discord.js";
-
 import type { Manager } from "@/core/manager";
-import { COOLDOWNS, LEVELS } from "@/core/constants";
+import { COOLDOWNS, LEVELS, TOOLS } from "@/core/constants";
 import { Command } from "@/structures/command";
 import { Utils } from "@/core/utils";
 
@@ -36,23 +35,27 @@ export default class Chop extends Command {
     }
 
     const player = Utils.fetchPlayer(this.client, message.author.id);
-    const hasWoodPick = Object.keys(player.inventory).includes("WOOD_PICKAXE");
-    const hasMetalPic = Object.keys(player.inventory).includes("METAL_PICKAXE");
+    const hasWoodPick = Object.keys(player.inventory).includes(
+      TOOLS.WOOD_PICKAXE.TAG,
+    );
+    const hasMetalPick = Object.keys(player.inventory).includes(
+      TOOLS.METAL_PICKAXE.TAG,
+    );
 
-    if (!hasWoodPick && !hasMetalPic) {
+    if (!hasWoodPick && !hasMetalPick) {
       message.reply(`> You need to craft up a hatchet!
 Please look into the \`${this.client.prefix}craft\` command!`);
       return;
     }
 
-    const loot = Utils.sortLoot(this.LOOT_TABLE, hasMetalPic);
+    const loot = Utils.sortLoot(this.LOOT_TABLE, !hasMetalPick);
     const caption = "gone mining rocks, deep inside the jungles of Ark...";
     const desc = Utils.generateDescription(message.author.id, caption, loot);
     Utils.addLoot(player.inventory, loot);
 
     await message.channel.send(desc);
     this.client.cooldowns[this.name][message.author.id] = `${
-      Utils.timestamp() + this.cooldown(hasMetalPic)
+      Utils.timestamp() + this.cooldown(!hasMetalPick)
     }`;
   }
 

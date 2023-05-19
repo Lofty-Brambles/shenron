@@ -82,9 +82,8 @@ export class Utils {
   public static addLoot(inventory: Inventory, loot: Inventory) {
     Object.entries(loot).forEach(([key, value]) => {
       if (value === 0) return;
-      inventory[key] = inventory[key] ? value : inventory[key] + value;
+      inventory[key] = inventory[key] ? inventory[key] + value : value;
     });
-    return inventory;
   }
 
   public static timestamp() {
