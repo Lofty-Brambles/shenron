@@ -2,29 +2,29 @@
 
 #### Commands
 
-[x] prefix, reload, ping [bot admin stuff]
-[x] help [obvious, what it does]
-[x] admin add/remove [cos beerus asked]
+- [x] prefix, reload, ping [bot admin stuff]
+- [x] help [obvious, what it does]
+- [x] admin add/remove [cos beerus asked]
 
-[x] forage [no tools / sickle, low coins]
-[x] chop [hatchet, moderate coins]
-[x] mine [pickaxe, moderate coins]
-[x] daily [increments as collected, breaks after 3 weeks]
+- [x] forage [no tools / sickle, low coins]
+- [x] chop [hatchet, moderate coins]
+- [x] mine [pickaxe, moderate coins]
+- [x] daily [increments as collected, breaks after 3 weeks]
 
-[ ] fight [random minigame to fight, higher level means higher rewards and occasional bosses]
-[ ] shop, buy, give [item / coin] [for an economy system]
-[x] inventory [showcases all the items]
-[ ] craft [shows items and crafts them, having in inventory gives perks]
-[x] sell [sell excess materials at fixed rate]
+- [ ] fight [random minigame to fight, higher level means higher rewards and occasional bosses]
+- [ ] shop, buy, give [item / coin] [for an economy system]
+- [x] inventory [showcases all the items]
+- [ ] craft [shows items and crafts them, having in inventory gives perks]
+- [x] sell [sell excess materials at fixed rate]
 
-[ ] profile [shows level, info, about user, all thelevel rewards as well]
+- [ ] profile [shows level, info, about user, all thelevel rewards as well]
 
 **Don't forget the re-save cron-job and also execute it on bot end**
 
 #### Buttons
 
-[ ] admin shop [opens up a ticket, from a modal on what to buy]
-[ ] forum channel for in game trading
+- [ ] admin shop [opens up a ticket, from a modal on what to buy]
+- [ ] forum channel for in game trading
 
 #### Stats
 
